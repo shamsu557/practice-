@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Arduino IoT Control Panel</title>
+  <style>
+    /* CSS styles for the web app */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .reading-container {
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .reading-container h2 {
+      color: #333;
+    }
+
+    .control-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .control-label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    .status-on {
+      background-color: green;
+    }
+
+    .status-off {
+      background-color: red;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #555;
+    }
+  </style>
+  <script>
+    // JavaScript code for the web app
+    function fetchData() {
+      // Make an AJAX request to the Arduino server to fetch data
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'http://192.168.244.123/data', true);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var data = JSON.parse(xhr.responseText);
+          updateUI(data);
+        } else {
+          console.error('Error:', xhr.status);
+        }
+      };
+      xhr.send();
+    }
+
+    function updateUI(data) {
+      // Update the DOM elements with the fetched data
+      document.getElementById('temperature').textContent = 'Temperature: ' + data.temperature + ' C';
+      document.getElementById('humidity').textContent = 'Humidity: ' + data.humidity + '%';
+      document.getElementById('lightLevel').textContent = 'Light Level: ' + data.lightLevel;
+      document.getElementById('fanStatus').textContent = 'Fan Status: ' + (data.fanState ? 'ON' : 'OFF');
+      document.getElementById('heaterStatus').textContent = 'Heater Status: ' + (data.heaterState ? 'ON' : 'OFF');
+      document.getElementById('lightStatus').textContent = 'Light Status: ' + (data.lightState ? 'ON' : 'OFF');
+
+      // Update the status indicator colors
+      var fanStatusIndicator = document.getElementById('fanStatusIndicator');
+      fanStatusIndicator.classList.remove('status-on', 'status-off');
+      fanStatusIndicator.classList.add(data.fanState ? 'status-on' : 'status-off');
+
+      var heaterStatusIndicator = document.getElementById('heaterStatusIndicator');
+      heaterStatusIndicator.classList.remove('status-on', 'status-off');
+      heaterStatusIndicator.classList.add(data.heaterState ? 'status-on' : 'status-off');
+
+      var lightStatusIndicator = document.getElementById('lightStatusIndicator');
+      lightStatusIndicator.classList.remove('status-on', 'status-off');
+      lightStatusIndicator.classList.add(data.lightState ? 'status-on' : 'status-off');
+    }
+
+    function toggleFan() {
+      // Make an AJAX request to the Arduino server to toggle the fan
+      var xhr = new XMLHttpRequest();
+     
